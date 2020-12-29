@@ -2,7 +2,7 @@
 A 4AM coffee fueled, team building, plant inspired side project  
 
 <p align="center">
-    <img width="640" height="640" src="ficus.svg" />
+    <img width="320" height="320" src="ficus.svg" />
 </p>  
 
 ## What can it do
