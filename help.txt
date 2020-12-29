@@ -1,0 +1,6 @@
+`
+'!ficus' invokes my wisdom
+'!ficus come' summons me
+'!ficus join <voice_channel>' summons me to <voice_channel>
+'!ficus shoo' banishes me
+`
