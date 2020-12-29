@@ -1,4 +1,4 @@
-![](ficus.svg =160px)
+![Ficus image](./ficus.svg =160px)
 # Ficus
 A 4AM coffee fueled, team building, plant inspired side project  
 
