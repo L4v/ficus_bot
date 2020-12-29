@@ -20,3 +20,5 @@ Imas 20 dinara za puding
 U horoskopu podznak neka nebuloza, u kineskom majmun u japanskom koza
 Vato you won't believe what I saw
 What is love, baby don't hurt me
+Now on Heroku!
+With 20% more vitamins!
