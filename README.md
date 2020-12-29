@@ -1,8 +1,8 @@
-<h1>Ficus</h1>
 
 <p align="center">
     <img width="320" height="320" src="ficus.svg" />
 </p>  
+<h1>Ficus</h1>
 A 4AM coffee fueled, team building, plant inspired side project  
 
 ## What can it do
