@@ -1,7 +1,7 @@
 <p align="center">
-    <img width="160" height="160" src="ficus.svg" />
-</p>
-# Ficus
+    <img width="640" height="640" src="ficus.svg" />
+</p>  
+# Ficus  
 A 4AM coffee fueled, team building, plant inspired side project  
 
 ## What can it do
