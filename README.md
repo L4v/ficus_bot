@@ -1,9 +1,9 @@
 <h1>Ficus</h1>
-A 4AM coffee fueled, team building, plant inspired side project  
 
 <p align="center">
     <img width="320" height="320" src="ficus.svg" />
 </p>  
+A 4AM coffee fueled, team building, plant inspired side project  
 
 ## What can it do
 The mighty Ficus can come and go as ~~It pleases~~ you will it and  
