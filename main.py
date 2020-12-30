@@ -75,11 +75,12 @@ HANGMAN_PICS = ['''
 bot = commands.Bot(command_prefix="!")
 
 def init_db():
+    connection = None
     query = '''CREATE TABLE IF NOT EXISTS highscore
-    (NAME VARCHAR(255) PRIMARY KEY,
+    (USERNAME VARCHAR(255) PRIMARY KEY,
     SCORE INT );'''
     try:
-        connection = pg.connect(os.getenv("FICUS_DB_URL"))
+        connection = pg.connect(os.getenv("DATABASE_URL"))
         cursor = connection.cursor()
         cursor.execute(query)
         connection.commit()
@@ -93,17 +94,20 @@ def init_db():
 
 def add_or_update_score(user_score):
     user, score = user_score
+    score = str(score)
+    connection = None
     try:
-        connection = pg.connect(os.getenv("FICUS_DB_URL"))
+        connection = pg.connect(os.getenv("DATABASE_URL"))
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM highscore")
         scores = cursor.fetchall()
         for s in scores:
             if s[0] == user and s[1] > score:
-                cursor.execute("UPDATE highscore SET score = " + score + "WHERE USER = " + user)
+                cursor.execute("UPDATE highscore SET score = " + score + "WHERE USERNAME = " + user)
                 connection.commit()
+                break
         else:
-            cursor.execute("INSERT INTO highscore (USER, SCORE) VALUES(" + user + "," + score + ")")
+            cursor.execute(f"INSERT INTO highscore (USERNAME, SCORE) VALUES('{user}' , {score} )")
             connection.commit()
     except (Exception, Error) as err:
         print("Postgres error while updating/adding score: ", err)
@@ -114,6 +118,7 @@ def add_or_update_score(user_score):
 
 def get_score():
     result = []
+    connection = None
     try:
         connection = pg.connect(os.getenv("DATABASE_URL"))
         cursor = connection.cursor()
@@ -129,11 +134,12 @@ def get_score():
 
 @bot.event
 async def on_ready():
+    init_db()
     global HANGMAN_WORDS
     print(f'{bot.user.name} has connected to Discord!')
+    sys.stdout.flush()
     with open(WORDS_FILENAME) as f:
         HANGMAN_WORDS = [line.rstrip() for line in f]
-    sys.stdout.flush()
 
 
 @bot.command(name="ficus")
@@ -161,9 +167,11 @@ async def ficus_says(ctx, arg1="", arg2=""):
     elif arg1 == "scoreboard":
         response = "```"
         for score in get_score():
-            response += score[0] + "\t" + score[1] + "\n"
+            response += score[0] + "\t" + str(score[1]) + "\n"
         response += "```"
         await ctx.send(response)
+    #elif arg1 == "test":
+    #    add_or_update_score(["Test", 2])
     elif arg1 == "join" and arg2 is not None:
         await ficus_join(ctx, arg2)
     elif arg1 == "branches":
