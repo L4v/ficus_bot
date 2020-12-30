@@ -87,7 +87,7 @@ async def ficus_branches(ctx, git):
     git = git if git is not None else "PSW-2020-ORG1/MedbayTech"
     get_response = requests.get(f"https://api.github.com/repos/{git}/branches")
     get_response_json = get_response.json()
-    response = "```\nShowing branches for: https://github.com/" + git + "\n" + "\n".join([b["name"] for b in response_json]) + "\n```"
+    response = "```\nShowing branches for: https://github.com/" + git + "\n" + "\n".join([b["name"] for b in get_response_json]) + "\n```"
     await ctx.send(response)
 
 bot.run(TOKEN)
