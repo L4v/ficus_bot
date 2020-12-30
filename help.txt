@@ -3,4 +3,6 @@
 '!ficus come' summons me
 '!ficus join <voice_channel>' summons me to <voice_channel>
 '!ficus shoo' banishes me
+'!ficus branch [<github_user>/<github_repo>]' lists branches for repo, default
+being PSW-2020-ORG1/MedbayTech
 `
