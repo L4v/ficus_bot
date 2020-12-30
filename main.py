@@ -102,7 +102,7 @@ def add_or_update_score(user_score):
         cursor.execute("SELECT * FROM highscore")
         scores = cursor.fetchall()
         for s in scores:
-            if s[0] == user and s[1] > score:
+            if s[0] == user and s[1] > int(score):
                 cursor.execute(f"UPDATE highscore SET score = {score} WHERE USERNAME = '{user}'")
                 connection.commit()
                 break
