@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import sys
 import requests
 import json
+import psycopg2 as pg 
+from psycopg2 import Error
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -72,6 +74,59 @@ HANGMAN_PICS = ['''
 
 bot = commands.Bot(command_prefix="!")
 
+def init_db():
+    query = '''CREATE TABLE IF NOT EXISTS highscore
+    (NAME VARCHAR(255) PRIMARY KEY,
+    SCORE INT );'''
+    try:
+        connection = pg.connect(os.getenv("FICUS_DB_URL"))
+        cursor = connection.cursor()
+        cursor.execute(query)
+        connection.commit()
+        print("Created table")
+    except (Exception, Error) as err:
+        print("Error with postgresql: ", err)
+    finally:
+        if(connection):
+            cursor.close()
+            connection.close()
+
+def add_or_update_score(user_score):
+    user, score = user_score
+    try:
+        connection = pg.connect(os.getenv("FICUS_DB_URL"))
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM highscore")
+        scores = cursor.fetchall()
+        for s in scores:
+            if s[0] == user and s[1] > score:
+                cursor.execute("UPDATE highscore SET score = " + score + "WHERE USER = " + user)
+                connection.commit()
+        else:
+            cursor.execute("INSERT INTO highscore (USER, SCORE) VALUES(" + user + "," + score + ")")
+            connection.commit()
+    except (Exception, Error) as err:
+        print("Postgres error while updating/adding score: ", err)
+    finally:
+        if(connection):
+            cursor.close()
+            connection.close()
+
+def get_score():
+    result = []
+    try:
+        connection = pg.connect(os.getenv("DATABASE_URL"))
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM highscore")
+        result = cursor.fetchall()
+    except (Exception, Error) as err:
+        print("Postgres error while getting scores: ", err)
+    finally:
+        if(connection):
+            cursor.close()
+            connection.close()
+    return result
+
 @bot.event
 async def on_ready():
     global HANGMAN_WORDS
@@ -102,6 +157,12 @@ async def ficus_says(ctx, arg1="", arg2=""):
         await ctx.send(response)
     elif arg1 == "newest":
         response = ficus_quotes[-1]
+        await ctx.send(response)
+    elif arg1 == "scoreboard":
+        response = "```"
+        for score in get_score():
+            response += score[0] + "\t" + score[1] + "\n"
+        response += "```"
         await ctx.send(response)
     elif arg1 == "join" and arg2 is not None:
         await ficus_join(ctx, arg2)
@@ -193,6 +254,14 @@ async def ficus_hangman(ctx, guess):
         response += "The word was: " + HANGMAN_CORRECT_WORD + "\n"
         response += "```"
         HANGMAN_NEW = True
+        winner = ctx.author.name
+        scores = get_score()
+        for score in scores:
+            if score[0] == winner:
+                add_or_update_score([score[0], score[1] + 1])
+                break
+        else:
+            add_or_update_score([winner, 1])
     else:
         response += hangman_progress()
         if HANGMAN_NO_GUESSES == 6:
