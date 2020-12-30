@@ -10,6 +10,7 @@ import json
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 QUOTES_FILENAME = "quotes.txt"
+WORDS_FILENAME = "serbian-latin.txt"
 HELP_FILENAME = "help.txt"
 
 HANGMAN_NO_GUESSES = 0
@@ -73,7 +74,10 @@ bot = commands.Bot(command_prefix="!")
 
 @bot.event
 async def on_ready():
+    global HANGMAN_WORDS
     print(f'{bot.user.name} has connected to Discord!')
+    with open(WORDS_FILENAME) as f:
+        HANGMAN_WORDS = [line.rstrip() for line in f]
     sys.stdout.flush()
 
 
@@ -192,7 +196,8 @@ async def ficus_hangman(ctx, guess):
     else:
         response += hangman_progress()
         if HANGMAN_NO_GUESSES == 6:
-            response += "\nGame over!"
+            response += "\nGame over!\n"
+            response += "The word was: " + HANGMAN_CORRECT_WORD + "\n"
             HANGMAN_NEW = True
             HANGMAN_NO_GUESSES = 0;
         response += "\n```"
