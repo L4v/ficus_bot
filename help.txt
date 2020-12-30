@@ -5,4 +5,5 @@
 '!ficus shoo' banishes me
 '!ficus branch [<github_user>/<github_repo>]' lists branches for repo, default
 being PSW-2020-ORG1/MedbayTech
+'!ficus hm [<letter/word>]' for hangman
 `
