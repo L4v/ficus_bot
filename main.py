@@ -12,11 +12,62 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 QUOTES_FILENAME = "quotes.txt"
 HELP_FILENAME = "help.txt"
 
-HANGMAN_FOUND = True
+HANGMAN_NO_GUESSES = 0
+HANGMAN_NEW= True
 HANGMAN_WORDS = ["liman", "ciklopentanoperhidrofenantren", "kasicica", "cao"]
 HANGMAN_GUESSED_LETTERS = []
 HANGMAN_CORRECT_WORD = ""
 HANGMAN_PROGRESS = ""
+HANGMAN_PICS = ['''
+  +---+
+  |   |
+      |
+      |
+      |
+      |
+=========''', '''
+  +---+
+  |   |
+  O   |
+      |
+      |
+      |
+=========''', '''
+  +---+
+  |   |
+  O   |
+  |   |
+      |
+      |
+=========''', '''
+  +---+
+  |   |
+  O   |
+ /|   |
+      |
+      |
+=========''', '''
+  +---+
+  |   |
+  O   |
+ /|\  |
+      |
+      |
+=========''', '''
+  +---+
+  |   |
+  O   |
+ /|\  |
+ /    |
+      |
+=========''', '''
+  +---+
+  |   |
+  O   |
+ /|\  |
+ / \  |
+      |
+=========''']
 
 bot = commands.Bot(command_prefix="!")
 
@@ -99,32 +150,32 @@ async def ficus_branches(ctx, git):
     await ctx.send(response)
 
 async def ficus_hangman(ctx, guess):
-    global HANGMAN_FOUND
+    global HANGMAN_NEW
     global HANGMAN_CORRECT_WORD
     global HANGMAN_WORDS
     global HANGMAN_GUESSED_LETTERS
     global HANGMAN_PROGRESS
+    global HANGMAN_PICS
+    global HANGMAN_NO_GUESSES
     if not guess:
-        if not HANGMAN_FOUND:
+        if not HANGMAN_NEW:
             response = "```\n"
-            response += "Guesses: [" + " ".join(set(HANGMAN_GUESSED_LETTERS)) + "]\n"
-            response += "Progress: " + HANGMAN_PROGRESS + "\n"
+            response += hangman_progress()
             response += "\n```"
             await ctx.send(response)
             return
         else:
-            HANGMAN_FOUND = False
-            HANGMAN_CORRECT_WORD = random.choice(HANGMAN_WORDS)
-            HANGMAN_GUESSED_LETTERS = []
+            hangman_reset()
             await ctx.send("```\nStarting new game...\n```")
             return
     guess = guess.lower()
-    if HANGMAN_FOUND:
-        HANGMAN_FOUND = False
-        HANGMAN_CORRECT_WORD = random.choice(HANGMAN_WORDS)
-        HANGMAN_GUESSED_LETTERS = []
+    if HANGMAN_NEW:
+        hangman_reset()
 
     HANGMAN_PROGRESS = ""
+    if guess not in HANGMAN_CORRECT_WORD and guess not in HANGMAN_GUESSED_LETTERS:
+        HANGMAN_NO_GUESSES += 1
+
     for c in HANGMAN_CORRECT_WORD:
         if guess == c or c in HANGMAN_GUESSED_LETTERS:
             HANGMAN_PROGRESS += c
@@ -137,11 +188,38 @@ async def ficus_hangman(ctx, guess):
         response += "Finally!\n"
         response += "The word was: " + HANGMAN_CORRECT_WORD + "\n"
         response += "```"
-        HANGMAN_FOUND = True
+        HANGMAN_NEW = True
     else:
-        response += "Guesses: [" + " ".join(set(HANGMAN_GUESSED_LETTERS)) + "]\n"
-        response += "Progress: " + HANGMAN_PROGRESS + "\n"
-        response += "```"
+        response += hangman_progress()
+        if HANGMAN_NO_GUESSES == 6:
+            response += "\nGame over!"
+            HANGMAN_NEW = True
+            HANGMAN_NO_GUESSES = 0;
+        response += "\n```"
     await ctx.send(response)
+
+def hangman_reset():
+    global HANGMAN_NEW
+    global HANGMAN_CORRECT_WORD
+    global HANGMAN_WORDS
+    global HANGMAN_GUESSED_LETTERS
+    global HANGMAN_PROGRESS
+    global HANGMAN_PICS
+    global HANGMAN_NO_GUESSES
+    HANGMAN_NEW = False
+    HANGMAN_CORRECT_WORD = random.choice(HANGMAN_WORDS)
+    HANGMAN_GUESSED_LETTERS = []
+    HANGMAN_NO_GUESSES = 0;
+
+def hangman_progress():
+    global HANGMAN_GUESSED_LETTERS
+    global HANGMAN_PROGRESS
+    global HANGMAN_PICS
+    global HANGMAN_NO_GUESSES
+    response = "Guesses: [" + " ".join(set(HANGMAN_GUESSED_LETTERS)) + "]\n"
+    response += "Progress: " + HANGMAN_PROGRESS + "\n"
+    response += "Number of guesses: " + str(HANGMAN_NO_GUESSES) + "/6\n"
+    response += HANGMAN_PICS[HANGMAN_NO_GUESSES]
+    return response
 
 bot.run(TOKEN)
