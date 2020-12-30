@@ -103,7 +103,7 @@ def add_or_update_score(user_score):
         scores = cursor.fetchall()
         for s in scores:
             if s[0] == user and s[1] > score:
-                cursor.execute("UPDATE highscore SET score = " + score + "WHERE USERNAME = " + user)
+                cursor.execute(f"UPDATE highscore SET score = {score} WHERE USERNAME = '{user}'")
                 connection.commit()
                 break
         else:
@@ -171,7 +171,7 @@ async def ficus_says(ctx, arg1="", arg2=""):
         response += "```"
         await ctx.send(response)
     #elif arg1 == "test":
-    #    add_or_update_score(["Test", 2])
+    #    add_or_update_score(["Test", 4])
     elif arg1 == "join" and arg2 is not None:
         await ficus_join(ctx, arg2)
     elif arg1 == "branches":
