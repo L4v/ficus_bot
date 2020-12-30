@@ -4,6 +4,8 @@ from discord.ext import commands
 import random
 from dotenv import load_dotenv
 import sys
+import requests
+import json
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -42,6 +44,8 @@ async def ficus_says(ctx, arg1="", arg2=""):
         await ctx.send(response)
     elif arg1 == "join" and arg2 is not None:
         await ficus_join(ctx, arg2)
+    elif arg1 == "branches":
+        await ficus_branches(ctx, arg2)
     else:
         response = random.choice(ficus_quotes)
         await ctx.send(response)
@@ -78,5 +82,12 @@ async def ficus_ciao(ctx):
         audio_source = discord.FFmpegPCMAudio("cao.mp3")
     if not voice_client.is_playing():
         voice_client.play(audio_source, after=None)
+
+async def ficus_branches(ctx, git):
+    git = git if git is not None else "PSW-2020-ORG1/MedbayTech"
+    get_response = requests.get(f"https://api.github.com/repos/{git}/branches")
+    get_response_json = get_response.json()
+    response = "```\nShowing branches for: https://github.com/" + git + "\n" + "\n".join([b["name"] for b in response_json]) + "\n```"
+    await ctx.send(response)
 
 bot.run(TOKEN)
