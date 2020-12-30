@@ -12,6 +12,12 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 QUOTES_FILENAME = "quotes.txt"
 HELP_FILENAME = "help.txt"
 
+HANGMAN_FOUND = True
+HANGMAN_WORDS = ["liman", "ciklopentanoperhidrofenantren", "kasicica", "cao"]
+HANGMAN_GUESSED_LETTERS = []
+HANGMAN_CORRECT_WORD = ""
+HANGMAN_PROGRESS = ""
+
 bot = commands.Bot(command_prefix="!")
 
 @bot.event
@@ -46,6 +52,8 @@ async def ficus_says(ctx, arg1="", arg2=""):
         await ficus_join(ctx, arg2)
     elif arg1 == "branches":
         await ficus_branches(ctx, arg2)
+    elif arg1 == "hm":
+        await ficus_hangman(ctx, arg2)
     else:
         response = random.choice(ficus_quotes)
         await ctx.send(response)
@@ -88,6 +96,52 @@ async def ficus_branches(ctx, git):
     get_response = requests.get(f"https://api.github.com/repos/{git}/branches")
     get_response_json = get_response.json()
     response = "```\nShowing branches for: https://github.com/" + git + "\n" + "\n".join([b["name"] for b in get_response_json]) + "\n```"
+    await ctx.send(response)
+
+async def ficus_hangman(ctx, guess):
+    global HANGMAN_FOUND
+    global HANGMAN_CORRECT_WORD
+    global HANGMAN_WORDS
+    global HANGMAN_GUESSED_LETTERS
+    global HANGMAN_PROGRESS
+    if not guess:
+        if not HANGMAN_FOUND:
+            response = "```\n"
+            response += "Guesses: [" + " ".join(set(HANGMAN_GUESSED_LETTERS)) + "]\n"
+            response += "Progress: " + HANGMAN_PROGRESS + "\n"
+            response += "\n```"
+            await ctx.send(response)
+            return
+        else:
+            HANGMAN_FOUND = False
+            HANGMAN_CORRECT_WORD = random.choice(HANGMAN_WORDS)
+            HANGMAN_GUESSED_LETTERS = []
+            await ctx.send("```\nStarting new game...\n```")
+            return
+    guess = guess.lower()
+    if HANGMAN_FOUND:
+        HANGMAN_FOUND = False
+        HANGMAN_CORRECT_WORD = random.choice(HANGMAN_WORDS)
+        HANGMAN_GUESSED_LETTERS = []
+
+    HANGMAN_PROGRESS = ""
+    for c in HANGMAN_CORRECT_WORD:
+        if guess == c or c in HANGMAN_GUESSED_LETTERS:
+            HANGMAN_PROGRESS += c
+        else:
+            HANGMAN_PROGRESS += "_ "
+    HANGMAN_GUESSED_LETTERS.append(guess)
+
+    response = "```\n"
+    if guess == HANGMAN_CORRECT_WORD or HANGMAN_PROGRESS == HANGMAN_CORRECT_WORD:
+        response += "Finally!\n"
+        response += "The word was: " + HANGMAN_CORRECT_WORD + "\n"
+        response += "```"
+        HANGMAN_FOUND = True
+    else:
+        response += "Guesses: [" + " ".join(set(HANGMAN_GUESSED_LETTERS)) + "]\n"
+        response += "Progress: " + HANGMAN_PROGRESS + "\n"
+        response += "```"
     await ctx.send(response)
 
 bot.run(TOKEN)
