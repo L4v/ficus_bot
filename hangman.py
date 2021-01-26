@@ -139,6 +139,7 @@ async def ficus_hangman(ctx, guess):
     global HANGMAN_PROGRESS
     global HANGMAN_PICS
     global HANGMAN_NO_GUESSES
+    guess = guess.lower().replace("sh", "š")
     if not guess:
         if not HANGMAN_NEW:
             response = "```\n"
@@ -198,7 +199,7 @@ def hangman_reset():
     global HANGMAN_PICS
     global HANGMAN_NO_GUESSES
     HANGMAN_NEW = False
-    HANGMAN_CORRECT_WORD = random.choice(HANGMAN_WORDS)
+    HANGMAN_CORRECT_WORD = random.choice(HANGMAN_WORDS).lower()
     HANGMAN_GUESSED_LETTERS = []
     HANGMAN_NO_GUESSES = 0;
 
