@@ -50,9 +50,11 @@ async def ficus_says(ctx, arg1="", arg2=""):
             response += score[0] + "\t" + str(score[1]) + "\n"
         response += "```"
         await ctx.send(response)
+    elif arg1 == "latest":
+        await ficus_latest(ctx, arg1)
     #elif arg1 == "test":
-        add_or_update_score(["Test", 5])
-    #elif arg1 == "join" and arg2 is not None:
+        # add_or_update_score(["Test", 5])
+    elif arg1 == "join" and arg2 is not None:
         await ficus_join(ctx, arg2)
     elif arg1 == "branches":
         await ficus_branches(ctx, arg2)
@@ -101,5 +103,16 @@ async def ficus_branches(ctx, git):
     get_response_json = get_response.json()
     response = "```\nShowing branches for: https://github.com/" + git + "\n" + "\n".join([b["name"] for b in get_response_json]) + "\n```"
     await ctx.send(response)
+
+async def ficus_latest(ctx):
+    get_response = requests.get(f"https://api.github.com/repos/L4v/ficus_bot/commits/master")
+    get_response_json = get_response.json()
+    response = "```\nLatest commit:\n" + get_latest_commit() + "\n```"
+    await ctx.send(response)
+
+def get_latest_commit():
+    get_response = requests.get(f"https://api.github.com/repos/L4v/ficus_bot/commits/master")
+    get_response_json = get_response.json()
+    return get_response_json["commit"]["message"]
 
 bot.run(TOKEN)
