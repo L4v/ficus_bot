@@ -7,8 +7,9 @@ import sys
 import requests
 import json
 import hangman
-import ctypes
-import ctypes.util
+# TODO(Jovan): Make it work
+#import ctypes
+#import ctypes.util
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -32,7 +33,8 @@ def init_audio():
 
 @bot.event
 async def on_ready():
-    init_audio()
+    # TODO(Jovan): Make it work
+    #init_audio()
     hangman.init()
     print(f'{bot.user.name} has connected to Discord!')
     sys.stdout.flush()
@@ -68,8 +70,6 @@ async def ficus_says(ctx, arg1="", arg2=""):
         await ctx.send(response)
     elif arg1 == "latest":
         await ficus_latest(ctx)
-    #elif arg1 == "test":
-        # add_or_update_score(["Test", 5])
     elif arg1 == "join" and arg2 is not None:
         await ficus_join(ctx, arg2)
     elif arg1 == "branches":
@@ -94,7 +94,8 @@ async def ficus_join(ctx, channel_name):
     if channel is not None:
         await ficus_disconnect(ctx)
         await channel.connect()
-        await ficus_ciao(ctx)
+        # TODO(Jovan): Make it work
+        #await ficus_ciao(ctx)
 
 #@bot.command(name="ficus_shoo")
 async def ficus_shoo(ctx):
@@ -105,13 +106,14 @@ async def ficus_disconnect(ctx):
     if ctx.voice_client is not None:
         await ctx.voice_client.disconnect()
 
-async def ficus_ciao(ctx):
-    guild = ctx.guild
-    voice_client = ctx.voice_client
-    if voice_client is not None:
-        audio_source = discord.FFmpegPCMAudio("cao.mp3")
-    if not voice_client.is_playing():
-        voice_client.play(audio_source, after=None)
+# TODO(Jovan): Make it work
+# async def ficus_ciao(ctx):
+#     guild = ctx.guild
+#     voice_client = ctx.voice_client
+#     if voice_client is not None:
+#         audio_source = discord.FFmpegPCMAudio("cao.mp3")
+#     if not voice_client.is_playing():
+#         voice_client.play(audio_source, after=None)
 
 async def ficus_branches(ctx, git):
     git = git if git != "" else "PSW-2020-ORG1/MedbayTech"
