@@ -51,7 +51,7 @@ async def ficus_says(ctx, arg1="", arg2=""):
         response += "```"
         await ctx.send(response)
     elif arg1 == "latest":
-        await ficus_latest(ctx, arg1)
+        await ficus_latest(ctx)
     #elif arg1 == "test":
         # add_or_update_score(["Test", 5])
     elif arg1 == "join" and arg2 is not None:
