@@ -7,6 +7,8 @@ import sys
 import requests
 import json
 import hangman
+import ctypes
+import ctypes.util
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -15,8 +17,22 @@ HELP_FILENAME = "help.txt"
 
 bot = commands.Bot(command_prefix="!")
 
+def init_audio():
+    print("ctypes - Find opus:")
+    a = ctypes.util.find_library('opus')
+    print(a)
+    
+    print("Discord - Load Opus:")
+    b = discord.opus.load_opus(a)
+    print(b)
+    
+    print("Discord - Is loaded:")
+    c = discord.opus.is_loaded()
+    print(c)
+
 @bot.event
 async def on_ready():
+    init_audio()
     hangman.init()
     print(f'{bot.user.name} has connected to Discord!')
     sys.stdout.flush()
