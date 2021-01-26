@@ -107,7 +107,7 @@ async def ficus_branches(ctx, git):
 async def ficus_latest(ctx):
     get_response = requests.get(f"https://api.github.com/repos/L4v/ficus_bot/commits/master")
     get_response_json = get_response.json()
-    response = "```\nLatest commit:\n" + get_latest_commit() + "\n```"
+    response = "Latest commit:\n" + get_latest_commit()
     await ctx.send(response)
 
 def get_latest_commit():
